@@ -1,0 +1,10 @@
+{
+    "development": {
+      "username": "root",
+      "password": "",
+      "database": "growwpaissa",
+      "host": "localhost",
+      "dialect": "mysql"
+    }
+  }
+  
