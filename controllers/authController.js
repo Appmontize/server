@@ -2,35 +2,47 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
-exports.signup = async (req, res) => {
-  const { name, email, password } = req.body;
-  const password_hash = await bcrypt.hash(password, 10);
-
+const register = async (req, res) => {
   try {
-    const user = await User.create({ name, email, password_hash });
-    res.status(201).json({ message: 'User created', user });
+    const { name, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({
+      name,
+      email,
+      password_hash: hashedPassword,
+    });
+
+    const token = jwt.sign({ userID: newUser.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(201).json({ message: 'User registered successfully', token, user: newUser });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Error registering user', error: error.message });
   }
 };
 
-exports.login = async (req, res) => {
-  const { email, password } = req.body;
-
+const login = async (req, res) => {
   try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
     const user = await User.findOne({ where: { email } });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+
+    if (!user || !await bcrypt.compare(password, user.password_hash)) {
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const validPassword = await bcrypt.compare(password, user.password_hash);
-    if (!validPassword) {
-      return res.status(401).json({ error: 'Invalid password' });
-    }
+    const token = jwt.sign({ userID: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET, { expiresIn: '100h' });
-    res.status(200).json({ message: 'Logged in', token });
+    res.status(200).json({ message: 'Login successful', token, user });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Error logging in', error: error.message });
   }
 };
+
+module.exports = { register, login };
