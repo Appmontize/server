@@ -2,7 +2,7 @@
     "development": {
       "username": "root",
       "password": "",
-      "database": "growwpaissa",
+      "database": "growwpaisa backend",
       "host": "localhost",
       "dialect": "mysql"
     }

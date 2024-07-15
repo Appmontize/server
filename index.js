@@ -14,8 +14,8 @@ app.use(cors());
 app.use('/auth/user', authRoutes);
 app.use('/api/wallet', walletRoutes);
 
-app.listen(3005, () => {
-  console.log('Server is running on port 3005');
+app.listen(3008, () => {
+  console.log('Server is running on port 3008');
   
   sequelize.authenticate()
     .then(() => {
