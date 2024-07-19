@@ -1,27 +1,24 @@
-require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const authRoutes = require('./routes/authRoute');
-const walletRoutes = require('./routes/walletRoute');
-const { sequelize } = require('./models');
-
 const app = express();
 
-app.use(bodyParser.json());
+// Use CORS middleware
 app.use(cors());
 
-app.use('/auth/user', authRoutes);
-app.use('/api/wallet', walletRoutes);
+app.use(bodyParser.json());
 
-app.listen(3008, () => {
-  console.log('Server is running on port 3008');
-  
-  sequelize.authenticate()
-    .then(() => {
-      console.log('Database connected');
-    })
-    .catch(err => {
-      console.log('Error: ' + err);
-    });
+const userRouter = require('./routes/authRoute');
+const walletRouter = require('./routes/walletRoute');
+const clickRouter = require('./routes/click');
+const postbackRouter = require('./routes/postback');
+
+app.use('auth/user', userRouter);
+app.use('api/wallet', walletRouter);
+app.use('/click', clickRouter);
+app.use('/postback', postbackRouter);
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

@@ -1,7 +1,7 @@
 {
     "development": {
-      "username": "teijtklgrewkjioskdfjlsekrj",
-      "password": "v4jvn7YgDYdxbQSk8SMV",
+      "username": "root",
+      "password": "",
       "database": "growwpaisabackend",
       "host": "localhost",
       "dialect": "mysql"
